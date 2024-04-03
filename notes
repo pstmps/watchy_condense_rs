@@ -1,0 +1,58 @@
+        let json_query = format!(
+            r#"{{
+                    "size": 0,
+                    "aggs": {{
+                        "unique_event_types": {{
+                            "composite": {{
+                                "size": {},
+                                "sources": [
+                                    {{
+                                        "file": {{
+                                            "terms": {{
+                                                "field": "file.path"
+                                            }}
+                                        }}
+                                    }}
+                                ]
+                                {}
+                            }},
+                            "aggs": {{
+                                "latest": {{
+                                    "top_hits": {{
+                                        "size": 1,
+                                        "sort": [
+                                            {{
+                                                "@timestamp": {{
+                                                    "order": "desc"
+                                                }}
+                                            }}
+                                        ],
+                                        "_source": {{
+                                            "includes": ["file.path", "file.type", "file.size", "@timestamp", "event.type", "event.action", "file.parent_path"]
+                                    }}
+                                }}
+                            }}
+                        }}
+                        }}
+                    }}
+            }}"#,//0
+                page_size,
+                after
+            );
+
+
+{"_shards": Object 
+    {"failed": Number(0), "skipped": Number(0), "successful": Number(2), "total": Number(2)}, 
+    "hits": Object 
+        {"hits": Array 
+            [Object {"_id": String("YVYGno4BStsSr9UNR2Zl"), 
+                "_index": String(".ds-logs-fim.event-default-2024.03.26-000002"), 
+                "_score": Null, 
+                "_source": Object {"@timestamp": String("2024-04-02T06:24:04.208Z"), 
+                "event": Object 
+                {"action": Array [String("deleted")], 
+                "type": Array [String("deletion")]}, 
+                "file": Object 
+                    {"path": String("/mnt/nvme/watchflash/test/newfile2")}}, 
+                "sort": Array [Number(1712039044208)]}], 
+                "max_score": Null, "total": Object {"relation": String("eq"), "value": Number(2)}}, "timed_out": Bool(false), "took": Number(2)}

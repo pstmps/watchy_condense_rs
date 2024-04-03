@@ -1,0 +1,24 @@
+Object {"doc_count": Number(1), 
+"key": Object {"file": String("/mnt/nvme/watchflash/project01/folder01/FL8AFCrwiUiSjrge/U2LEGYume3mnRG4roCCHUX5d0pUXyBsM")}, 
+"latest": Object {"hits": Object {"hits": Array 
+[Object {"_id": String("eovreo4BwcYyg-Rs4iVS"),
+ "_index": String(".ds-logs-fim.event-default-2024.03.26-000002"),
+ "_score": Null, 
+ "_source": Object 
+ {"@timestamp": String("2024-03-26T13:21:00.539Z"), 
+ "event": Object {"action": Array [String("created")], 
+ "type": Array [String("creation")]}, 
+ 
+ "file": Object {
+
+    "parent_path": String("/mnt/nvme/watchflash/project01/folder01/FL8AFCrwiUiSjrge"), 
+ "path": String("/mnt/nvme/watchflash/project01/folder01/FL8AFCrwiUiSjrge/U2LEGYume3mnRG4roCCHUX5d0pUXyBsM"), 
+ 
+ "size": Number(1000000), 
+ "type": String("file")}}, 
+ "sort": Array [Number(1711459260539)]}], 
+ "max_score": Null, 
+ 
+ "total": Object
+ 
+ {"relation": String("eq"), "value": Number(1)}}}}

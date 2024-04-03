@@ -1,0 +1,61 @@
+{
+  "took": 8,
+  "timed_out": false,
+  "_shards": {
+    "total": 2,
+    "successful": 2,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 2,
+      "relation": "eq"
+    },
+    "max_score": 1,
+    "hits": [
+      {
+        "_index": ".ds-logs-fim.event-default-2024.03.26-000002",
+        "_id": "AIwUgY4BwcYyg-RsJv7-",
+        "_score": 1,
+        "_source": {
+          "@timestamp": "2024-03-27T18:02:36.021Z",
+          "file": {
+            "path": "/mnt/nvme/watchflash/project01/folder02/SJFzesp8iLwcrIU1/zyabTggbEFExt5Jb2MoPZvl99IeoXR33",
+            "parent_path": "/mnt/nvme/watchflash/project01/folder02/SJFzesp8iLwcrIU1"
+          },
+          "event": {
+            "action": [
+              "deleted"
+            ],
+            "type": [
+              "deletion"
+            ]
+          }
+        }
+      },
+      {
+        "_index": ".ds-logs-fim.event-default-2024.03.26-000002",
+        "_id": "rovseo4BwcYyg-RsvEwY",
+        "_score": 1,
+        "_source": {
+          "@timestamp": "2024-03-26T13:21:58.328Z",
+          "file": {
+            "type": "file",
+            "path": "/mnt/nvme/watchflash/project01/folder02/SJFzesp8iLwcrIU1/zyabTggbEFExt5Jb2MoPZvl99IeoXR33",
+            "size": 1000000,
+            "parent_path": "/mnt/nvme/watchflash/project01/folder02/SJFzesp8iLwcrIU1"
+          },
+          "event": {
+            "action": [
+              "created"
+            ],
+            "type": [
+              "creation"
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
