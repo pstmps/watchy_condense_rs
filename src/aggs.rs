@@ -7,6 +7,8 @@ use crate::elastic::create_client;
 use crate::message::Message;
 
 
+// TODO use json! macro to create the query
+
 pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout: u64, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
 
     loop {
@@ -109,7 +111,7 @@ pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout:
             );
         }
 
-            //sleep for 5 seconds
+            //sleep for $timeout seconds
         sleep(Duration::from_secs(timeout)).await;
 
     }
@@ -117,5 +119,5 @@ pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout:
 
 
     
-    Ok(())
+   // Ok(())
 }

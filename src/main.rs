@@ -7,7 +7,6 @@ pub mod parse_record;
 pub mod delete_records;
 
 use crate::app::App;
-use crate::message::Message;
 
 
 async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
@@ -16,7 +15,7 @@ async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO initialize_panic_handler()?;
   
     //let args = Cli::parse();
-    let mut app = App::new(1024)?;
+    let mut app = App::new(1024,".ds-logs-fim.event-default*",10,100,5,20)?;
     app.run().await?;
   
     Ok(())

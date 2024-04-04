@@ -5,7 +5,6 @@ use tokio::time::{sleep, Duration};
 use std::collections::HashSet;
 use elasticsearch::DeleteByQueryParts;
 
-
 use crate::elastic::create_client;
 
 pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout: u64, mut delete_rx: mpsc::Receiver<Value>) -> Result<(), Box<dyn std::error::Error>> {
@@ -13,7 +12,7 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
     let mut file_paths = HashSet::new();
     let mut records = HashSet::new();
 
-    print!("Delete records from index: {}", index);
+    println!("Delete records from index: {}", index);
     loop {
         tokio::select! {
             // Wait for a new record or timeout
@@ -44,6 +43,7 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
             }
             // Timeout after 5 seconds
             _ = sleep(Duration::from_secs(timeout)) => {
+                println!("[+] [+] Timeout [+] [+]");
                 if !file_paths.is_empty() || !records.is_empty() {
 
                     let query = generate_query(&file_paths, &records).unwrap();
@@ -80,9 +80,8 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
 }
 
 
-fn generate_query(file_paths: &HashSet<String>, records: &HashSet<(String,String)>) -> Result<(Value), Box<dyn std::error::Error>> {
+fn generate_query(file_paths: &HashSet<String>, records: &HashSet<(String,String)>) -> Result<Value, Box<dyn std::error::Error>> {
     let mut file_paths_query = vec![];
-    //let mut wild_card_query = vec![];
     let mut records_query = vec![];
 
     for file_path in file_paths {
@@ -131,9 +130,7 @@ fn generate_query(file_paths: &HashSet<String>, records: &HashSet<(String,String
 
     });
 
-    //println!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
-
-    Ok((query))
+    Ok(query)
 }
 
 async fn delete_records(index: &str, query: Value) -> Result<Value, Box<dyn std::error::Error>> {

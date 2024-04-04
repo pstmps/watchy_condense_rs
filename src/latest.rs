@@ -6,6 +6,8 @@ use elasticsearch::SearchParts;
 use crate::elastic::create_client;
 use crate::message::Message;
 
+// TODO use json! macro to create the query
+
 pub async fn get_last_event_for_record(index: &str, record: &str, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
 
     let client = create_client()?;

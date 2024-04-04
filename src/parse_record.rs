@@ -63,7 +63,7 @@ pub async fn parse_record(record: Value, tx: mpsc::Sender<Message>) -> Result<()
             .and_then(|v| v.as_str())
             .unwrap_or("empty_record_index");
         
-            ((record_id.to_string(),record_index.to_string()))
+            (record_id.to_string(),record_index.to_string())
         };
 
     // println!("File Path: {:?}", file_path);
