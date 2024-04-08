@@ -40,9 +40,6 @@ pub async fn parse_record(record: Value, tx: mpsc::Sender<Message>) -> Result<()
         .and_then(|v| v.as_str())
         .unwrap_or("empty_file_path");
 
-    //println!("Event action: {:?}", event_action);
-
-
     let record_id_and_index = if event_action == "moved" || event_action == "deleted" {
             ("no_id".to_string(),"no_index".to_string())
         } else {
@@ -75,6 +72,8 @@ pub async fn parse_record(record: Value, tx: mpsc::Sender<Message>) -> Result<()
         "record_id": record_id_and_index.0,
         "record_index": record_id_and_index.1,
     });
+
+    log::debug!("Parsed record: {}", payload);
 
     let message = Message::Delete {
         event_type: event_type.to_string(),

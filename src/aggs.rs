@@ -55,6 +55,8 @@ pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout:
                 .body(value)
                 .send()
                 .await?;
+
+            log::debug!("Response from ES: {:?}", response);
         
             let response_body = match response.json::<Value>().await {
                 Ok(body) => body,
@@ -67,7 +69,6 @@ pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout:
             };
 
             for agg in aggs {
-                //println!("{:?}", agg);
 
                 let doc_count = agg["doc_count"].as_u64().unwrap();
 
@@ -80,9 +81,8 @@ pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout:
                         let message = Message::Aggregate{
                             event_type: "Aggregate".to_string(),
                             payload: agg_clone};
-                        //sleep(Duration::from_secs(4)).await; 
+
                         _tx.send(message).await.unwrap();
-                        //print!(".");
 
                     });
                     
@@ -111,13 +111,10 @@ pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout:
             );
         }
 
+        log::info!("Aggs task sleeping for {} seconds", timeout);
             //sleep for $timeout seconds
         sleep(Duration::from_secs(timeout)).await;
 
-    }
-
-
-
-    
+    }    
    // Ok(())
 }

@@ -48,6 +48,8 @@ pub async fn get_last_event_for_record(index: &str, record: &str, tx: mpsc::Send
         .send()
         .await?;
 
+    log::debug!("Response from ES: {:?}", response);
+
     let response_body = match response.json::<Value>().await {
         Ok(body) => body,
         Err(_) => return Err("Failed to get last event for record".into()),
@@ -59,8 +61,6 @@ pub async fn get_last_event_for_record(index: &str, record: &str, tx: mpsc::Send
     };
 
     tx.send(message).await?;
-
-    //println!("{:?}", response_body);//["hits"]["hits"][0]["_source"]["file"]["path"]);
 
     Ok(())
 

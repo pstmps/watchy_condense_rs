@@ -12,12 +12,12 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
     let mut file_paths = HashSet::new();
     let mut records = HashSet::new();
 
-    println!("Delete records from index: {}", index);
+    log::info!("Delete records from index: {}", index);
     loop {
         tokio::select! {
             // Wait for a new record or timeout
             record = delete_rx.recv() => {
-                println!("[+] record: {:?}", record);
+                log::debug!("Received record: {:?}", record);
                 if let Some(record) = record {
                     let file_path = record
                         .get("file_path")
@@ -43,21 +43,27 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
             }
             // Timeout after 5 seconds
             _ = sleep(Duration::from_secs(timeout)) => {
-                println!("[+] [+] Timeout [+] [+]");
+                log::info!("Timeout reached");
                 if !file_paths.is_empty() || !records.is_empty() {
+
+                    log::info!("Deleting records after timeout reached: {:?}", file_paths);
 
                     let query = generate_query(&file_paths, &records).unwrap();
 
+                    log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
+
                     let response = delete_records(index, query).await?;
 
-                    println!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
+                    log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
 
-                    // delete records
+                    // println!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
+
+                    // // delete records
 
 
-                    println!("[+] [+] Timeout");
-                    println!("[+] [+] Deleting records: {:?}", file_paths);
-                    println!("[+] [+] Deleting records: {:?}", records);
+                    // println!("[+] [+] Timeout");
+                    // println!("[+] [+] Deleting records: {:?}", file_paths);
+                    // println!("[+] [+] Deleting records: {:?}", records);
                     // delete records
                     file_paths.clear();
                     records.clear();
@@ -66,11 +72,14 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
         }
     
         if file_paths.len() > buffer_size {
-            println!("[+] [+] Deleting records: {:?}", file_paths);
-            println!("[+] [+] Deleting records: {:?}", records);
+            // println!("[+] [+] Deleting records: {:?}", file_paths);
+            // println!("[+] [+] Deleting records: {:?}", records);
+            log::info!("Deleting records after buffer size reached: {:?}", file_paths);
             let query = generate_query(&file_paths, &records).unwrap();
+            log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
             let response = delete_records(index, query).await?;
-            println!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
+            log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
+            //println!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
             // delete records
             file_paths.clear();
             records.clear();

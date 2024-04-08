@@ -38,6 +38,8 @@ impl App {
         let (event_tx, mut event_rx) = mpsc::channel(self.action_buffer_size);
         let (delete_tx, delete_rx) = mpsc::channel(self.action_buffer_size);
 
+        log::info!("Starting condensing app on index: {} with buffer size: {}", self.index, self.action_buffer_size);
+
         // let index = ".ds-logs-fim.event-default*";
         // let page_size = 10;
         // let buffer_size = 100;
@@ -54,8 +56,7 @@ impl App {
         let _index = index.to_string();
         let _del_handle = tokio::spawn(async move {
             if let Err(e) = delete_records_from_index(_index.as_str(), buffer_size, del_timeout, delete_rx).await {
-                // Handle error here
-                eprintln!("Failed to delete records from index: {}", e);
+                log::error!("Failed to start delete records from index task: {}", e)
             }
         });
         handles.push(_del_handle);
@@ -65,9 +66,7 @@ impl App {
         let _agg_handle = tokio::spawn(async move {
 
             if let Err(e) = get_aggs_entries_from_index(_index.as_str(), page_size, agg_timeout,_event_tx).await {
-                // Handle error here
-                eprintln!("Failed to get aggs entries from index: {}", e);
-            
+                log::error!("Failed to start get aggs entries from index task: {}", e);
             };
         });
         handles.push(_agg_handle);
@@ -77,7 +76,7 @@ impl App {
         loop {
             if let Some(event) = event_rx.recv().await {
                 if let Err(e) = self.process_events(event, &event_tx, &delete_tx, &mut handles, _index.as_str()).await {
-                    eprintln!("Failed to process events: {}", e);
+                    log::error!("Failed to process events: {}", e);
                 };
             }
             if self.should_quit {
@@ -88,69 +87,13 @@ impl App {
             }
         }
 
-
-    //     loop {
-
-    //         if let Some(event) = event_rx.recv().await {
-    //             let _event_tx = event_tx.clone();
- 
-    //             match event {
-    //                 Message::Aggregate { event_type, payload } => {
-    //                     //println!("Aggregate event: {} with payload: {}", &event_type, &payload);
-    //                     let _payload = payload.clone();
-    //                     let record = _payload["key"]["file"].to_owned();
-    //                     let lastevent_handle = tokio::spawn(async move {
-    //                         let _ = get_last_event_for_record(index, record.as_str().unwrap(), _event_tx).await;
-    //                     });
-    //                     handles.push(lastevent_handle);
-    //                 },
-    //                 Message::LastRecord { event_type, payload } => {
-    //                     //println!("LastRecord event: {} with payload: {}", event_type, payload);
-    //                     let _payload = payload.clone();
-    //                     let parserecord_handle = tokio::spawn(async move {
-    //                         let _ = parse_record( _payload, _event_tx).await;
-    //                     });
-    //                     handles.push(parserecord_handle);
-
-    //                 },
-    //                 Message::Delete { event_type, payload } => {
-
-    //                     let _delete_tx = delete_tx.clone();
-    //                     //println!("Delete event: {} with payload: {}", event_type, payload);
-    //                     let deltx_handle = tokio::spawn(async move {
-    //                         let _ = _delete_tx.send(payload).await;
-    //                     });
-    //                     handles.push(deltx_handle);
-
-    //                 },
-    //             }
-
-    //         }
-            
-
-    //     if self.should_quit {
-    //       return Ok(())
-    //     }
-  
-    //     if self.should_suspend {
-    //         return Ok(())
-    //     }
-
-    //     if run_once {
-    //         println!("Running once");
-    //         for handle in handles {
-    //             handle.await?;
-    //         }
-    //         return Ok(())
-    //     }
-    // }
     }
 
     async fn process_events(&mut self, event: Message, event_tx: &mpsc::Sender<Message>, delete_tx: &mpsc::Sender<Value>, handles: &mut Vec<JoinHandle<()>>, index: &str) -> Result<(), Box<dyn std::error::Error>> {
         let _event_tx = event_tx.clone();
         match event {
             Message::Aggregate { event_type: _event_type, payload } => {
-                //println!("Aggregate event: {} with payload: {}", &event_type, &payload);
+                log::debug!("Aggregate event received: {} with payload: {}", _event_type, payload);
                 let _payload = payload.clone();
                 let _index = index.to_string();
                 let record = _payload["key"]["file"].to_owned();
@@ -160,7 +103,7 @@ impl App {
                 handles.push(lastevent_handle);
             },
             Message::LastRecord { event_type: _event_type, payload } => {
-                //println!("LastRecord event: {} with payload: {}", event_type, payload);
+                log::debug!("LastRecord event received: {} with payload: {}", _event_type, payload);
                 let _payload = payload.clone();
                 let parserecord_handle = tokio::spawn(async move {
                     let _ = parse_record( _payload, _event_tx).await;
@@ -168,8 +111,8 @@ impl App {
                 handles.push(parserecord_handle);
             },
             Message::Delete { event_type: _event_type, payload } => {
+                log::debug!("Delete event received: {} with payload: {}", _event_type, payload);
                 let _delete_tx = delete_tx.clone();
-                //println!("Delete event: {} with payload: {}", event_type, payload);
                 let deltx_handle = tokio::spawn(async move {
                     let _ = _delete_tx.send(payload).await;
                 });
