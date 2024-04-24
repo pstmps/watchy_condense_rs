@@ -14,7 +14,7 @@ pub async fn get_last_event_for_record(index: &str, record: &str, tx: mpsc::Send
 
     let page_size = 1; // only get the last event
 
-    let fields = vec!["file.type", "file.path", "@timestamp", "event.type", "event.action"];
+    let fields = vec!["file.type", "file.uri", "@timestamp", "event.type", "event.action"];
     let fields: Vec<Value> = fields.into_iter().map(|s| Value::String(s.to_string())).collect();
     let fields = serde_json::to_string(&fields)?;
 
@@ -29,7 +29,7 @@ pub async fn get_last_event_for_record(index: &str, record: &str, tx: mpsc::Send
                     "bool": {{
                       "must": [
                         {{"term": 
-                        {{ "file.path" : "{}" }}}}
+                        {{ "file.uri" : "{}" }}}}
                         ]
                     }}
                   }}

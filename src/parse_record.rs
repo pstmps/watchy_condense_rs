@@ -36,7 +36,7 @@ pub async fn parse_record(record: Value, tx: mpsc::Sender<Message>) -> Result<()
         .and_then(|v| v.get(0))
         .and_then(|v| v.get("_source"))
         .and_then(|v| v.get("file"))
-        .and_then(|v| v.get("path"))
+        .and_then(|v| v.get("uri"))
         .and_then(|v| v.as_str())
         .unwrap_or("empty_file_path");
 

@@ -96,13 +96,13 @@ fn generate_query(file_paths: &HashSet<String>, records: &HashSet<(String,String
     for file_path in file_paths {
         file_paths_query.push(json!({
             "term": {
-                "file.path": file_path
+                "file.uri": file_path
             }
         }));
 
         file_paths_query.push(json!({
             "wildcard": {
-                "file.path": {
+                "file.uri": {
                     "value": format!("{}/*", file_path)
                 }
             }

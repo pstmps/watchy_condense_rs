@@ -19,21 +19,21 @@ async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO initialize_panic_handler()?;
 
     // Create an instance of ESClient with a placeholder Elasticsearch client
-    let mut es_client = ESClient::new()?;
+    // let mut es_client = ESClient::new()?;
 
-    // Create an Elasticsearch client
-    // let client = es_client.create_clients()?;
+    // // Create an Elasticsearch client
+    // // let client = es_client.create_clients()?;
 
-    let es_client_guard = ESClient::get_instance().lock().unwrap();
-    let client = &es_client_guard.client;
+    // let es_client_guard = ESClient::get_instance().lock().unwrap();
+    // let client = &es_client_guard.client;
 
-    let response: Response = client
-    .cat()
-    .health()
-    .send()
-    .await?;
+    // let response: Response = client
+    // .cat()
+    // .health()
+    // .send()
+    // .await?;
 
-    println!("{:?}", response);
+    // println!("{:?}", response);
   
     //let args = Cli::parse();
     let mut app = App::new(1024,".ds-logs-fim.event-default*",10,100,5,20)?;

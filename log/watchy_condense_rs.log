@@ -1,131 +1,49 @@
-2024-04-05T08:58:05.056201Z  INFO src/app.rs:41: Starting condensing app on index: .ds-logs-fim.event-default* with buffer size: 1024    
-2024-04-05T08:58:05.056458Z  INFO src/delete_records.rs:15: Delete records from index: .ds-logs-fim.event-default*    
-2024-04-05T08:58:05.153391Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T08:58:10.058061Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:15.058938Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:20.061373Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:25.063255Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:25.270881Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T08:58:30.06614Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:35.067052Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:40.067651Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:45.069265Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:45.340652Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T08:58:50.071308Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:58:55.073841Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:00.076663Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:05.079151Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:05.392596Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T08:59:10.079841Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:15.081724Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:20.083264Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:25.084997Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:25.492416Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T08:59:30.085999Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:35.086799Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:40.088221Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:45.08973Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:45.587413Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T08:59:50.091904Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T08:59:55.092656Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:00.093675Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:05.096226Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:05.652896Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:00:10.097624Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:15.099544Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:20.100664Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:25.102835Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:25.743479Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:00:30.104564Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:35.106128Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:40.107481Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:45.109353Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:45.828139Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:00:50.111906Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:00:55.114472Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:00.116275Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:05.117823Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:05.880457Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:01:10.120271Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:15.123378Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:20.126406Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:25.129217Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:25.978473Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:01:30.130405Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:35.131832Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:40.13285Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:45.134801Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:46.075389Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:01:50.136968Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:01:55.137709Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:00.140323Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:05.14152Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:06.168383Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:02:10.14329Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:15.144022Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:20.145897Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:25.147517Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:26.264489Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:02:30.149588Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:35.15164Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:40.154137Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:45.156108Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:46.358747Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:02:50.157252Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:02:55.158907Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:00.160554Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:05.163292Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:06.450917Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:03:10.16422Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:15.165618Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:20.166822Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:25.168551Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:26.546919Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:03:30.171034Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:35.173771Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:40.175624Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:45.177767Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:46.642603Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:03:50.17917Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:03:55.181167Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:00.182381Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:05.183021Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:06.743687Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:04:10.185151Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:15.186295Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:20.187242Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:25.18897Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:26.844007Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:04:30.19156Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:35.194782Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:40.19752Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:45.1983Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:46.9415Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:04:50.200214Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:04:55.201711Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:00.204198Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:05.205613Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:07.035138Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:05:10.207662Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:15.210326Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:20.212334Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:25.214249Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:27.128799Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:05:30.222586Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:35.225239Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:40.22688Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:45.228499Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:47.225831Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:05:50.229424Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:05:55.230167Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:00.231895Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:05.234957Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:07.279788Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:06:10.236509Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:15.239012Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:20.240864Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:25.243095Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:27.366916Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
-2024-04-05T09:06:30.244812Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:35.251468Z  INFO src/delete_records.rs:46: Timeout reached    
-2024-04-05T09:06:40.25377Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:12:56.517199Z  INFO src/app.rs:41: Starting condensing app on index: .ds-logs-fim.event-default* with buffer size: 1024    
+2024-04-24T10:12:56.517518Z  INFO src/delete_records.rs:15: Delete records from index: .ds-logs-fim.event-default*    
+2024-04-24T10:12:57.669583Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:13:01.519956Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:06.521235Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:11.522289Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:16.523837Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:18.79506Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:13:21.526444Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:26.528116Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:31.529402Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:36.531729Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:39.680175Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:13:41.533575Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:46.534757Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:51.536535Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:13:56.539078Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:01.222752Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:14:05.204468Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:05.204648Z  INFO src/delete_records.rs:49: Deleting records after timeout reached: {"hub:/mnt/nvme/watchflash/other_folder", "hub:/mnt/nvme/watchflash/other_folder/fdsf", "hub:/mnt/nvme/watchflash/other_folder/fdshfjshdfgjksdg"}    
+2024-04-24T10:14:10.301381Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:15.303192Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:20.306112Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:22.237633Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:14:25.307982Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:30.310203Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:35.312565Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:40.315854Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:43.599816Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:14:45.318782Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:50.320146Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:14:55.323052Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:00.324616Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:04.594343Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:15:05.32581Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:10.328298Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:15.330172Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:20.331648Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:25.333874Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:27.218478Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:15:30.335315Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:35.337909Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:40.339983Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:45.343119Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:48.363326Z  INFO src/aggs.rs:114: Aggs task sleeping for 20 seconds    
+2024-04-24T10:15:52.989976Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:15:52.990142Z  INFO src/delete_records.rs:49: Deleting records after timeout reached: {"hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/wFOPotIFJmWYuhXqRRUjNnuKR2WkehFM", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/ZOsaVvYzdtgJV904ZI5luHxE2w6aPPIM", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/CQQdB4xCm4XoI1k8RLM7ez8n3ZaBiESW", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/8MCTclJqGBp3NFXuch1R1eke4bwAp770", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/isE1fWipyNrTLj5IKHudNeqBTSMxPvxG", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/3HNE2b7yEIb2rnB7g724BIohJpB7X3g9", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/7QCyLCPjv3qIgQ9BKcdixxNhZBic7IsY", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/JlV81i4tRzDk8uiMxClwulaOmlzlHDnD", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/hqsNSI1tn9SoBoRYJxXch9PN6PM1dqCh", "hub:/mnt/nvme/watchflash/project02/folder01/CuW9ZkQjdtSZMPR1/qIPhy7bYkvHSQu5j7VEZ67EiuN0r5x4b"}    
+2024-04-24T10:15:58.599121Z  INFO src/delete_records.rs:46: Timeout reached    
+2024-04-24T10:16:03.600891Z  INFO src/delete_records.rs:46: Timeout reached    

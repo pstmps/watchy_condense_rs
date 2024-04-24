@@ -96,7 +96,7 @@ fn create_transport() -> Result<Transport, Box<dyn Error>> {
 
     let es_hosts = vec![
         Host {
-            host_ip: "192.168.2.225",
+            host_ip: "192.168.2.193",
             host_port: 9200,
             host_scheme: "https",
             verify_certs: false,

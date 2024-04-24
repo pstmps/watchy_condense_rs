@@ -34,7 +34,7 @@ pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout:
                                         {{
                                             "file": {{
                                                 "terms": {{
-                                                    "field": "file.path"
+                                                    "field": "file.uri"
                                                 }}
                                             }}
                                         }}
