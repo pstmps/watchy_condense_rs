@@ -5,14 +5,15 @@ use serde_json::Value;
 
 use crate::elastic::create_client;
 use crate::message::Message;
+use crate::elastic::Host;
 
 
 // TODO use json! macro to create the query
 
-pub async fn get_aggs_entries_from_index(index: &str, page_size: usize, timeout: u64, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn get_aggs_entries_from_index(es_host: Host, index: &str, page_size: usize, timeout: u64, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
 
     loop {
-        let client = create_client()?;
+        let client = create_client(es_host.clone())?;
 
 
         let mut after = String::new();

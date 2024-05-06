@@ -2,15 +2,15 @@ use serde_json::Value;
 use tokio::sync::mpsc;
 use elasticsearch::SearchParts;
 
-
 use crate::elastic::create_client;
 use crate::message::Message;
+use crate::elastic::Host;
 
 // TODO use json! macro to create the query
 
-pub async fn get_last_event_for_record(index: &str, record: &str, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn get_last_event_for_record(es_host: Host, index: &str, record: &str, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
 
-    let client = create_client()?;
+    let client = create_client(es_host)?;
 
     let page_size = 1; // only get the last event
 

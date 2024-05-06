@@ -6,8 +6,9 @@ use std::collections::HashSet;
 use elasticsearch::DeleteByQueryParts;
 
 use crate::elastic::create_client;
+use crate::elastic::Host;
 
-pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout: u64, mut delete_rx: mpsc::Receiver<Value>) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn delete_records_from_index(es_host: Host, index: &str, buffer_size: usize, timeout: u64, mut delete_rx: mpsc::Receiver<Value>) -> Result<(), Box<dyn std::error::Error>> {
 
     let mut file_paths = HashSet::new();
     let mut records = HashSet::new();
@@ -52,7 +53,7 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
 
                     log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
 
-                    let response = delete_records(index, query).await?;
+                    let response = delete_records(es_host.clone(), index, query).await?;
 
                     log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
 
@@ -77,7 +78,7 @@ pub async fn delete_records_from_index(index: &str, buffer_size: usize, timeout:
             log::info!("Deleting records after buffer size reached: {:?}", file_paths);
             let query = generate_query(&file_paths, &records).unwrap();
             log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
-            let response = delete_records(index, query).await?;
+            let response = delete_records(es_host.clone(), index, query).await?;
             log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
             //println!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
             // delete records
@@ -142,8 +143,8 @@ fn generate_query(file_paths: &HashSet<String>, records: &HashSet<(String,String
     Ok(query)
 }
 
-async fn delete_records(index: &str, query: Value) -> Result<Value, Box<dyn std::error::Error>> {
-   let client = create_client()?;
+async fn delete_records(es_host: Host,index: &str, query: Value) -> Result<Value, Box<dyn std::error::Error>> {
+   let client = create_client(es_host.clone())?;
 
    let response = client
             .delete_by_query(DeleteByQueryParts::Index(&[index]))
