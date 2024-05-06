@@ -57,15 +57,6 @@ pub async fn delete_records_from_index(es_host: Host, index: &str, buffer_size: 
 
                     log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
 
-                    // println!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
-
-                    // // delete records
-
-
-                    // println!("[+] [+] Timeout");
-                    // println!("[+] [+] Deleting records: {:?}", file_paths);
-                    // println!("[+] [+] Deleting records: {:?}", records);
-                    // delete records
                     file_paths.clear();
                     records.clear();
                 }
