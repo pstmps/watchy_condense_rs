@@ -15,7 +15,7 @@ pub async fn get_aggs_entries_from_index(
     page_size: usize,
     agg_sleep: u64,
     tx: mpsc::Sender<Message>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), color_eyre::Report> {
     loop {
         let client = create_client(es_host.clone())?;
 
@@ -125,10 +125,11 @@ pub async fn get_aggs_entries_from_index(
         log::info!("Aggs task sleeping for {} seconds", agg_sleep);
         //sleep for $agg_sleep seconds
         sleep(Duration::from_secs(agg_sleep)).await;
+        
     }
 }
 
-fn generate_query(page_size: usize, after: &str) -> Result<String, Box<dyn std::error::Error>> {
+fn generate_query(page_size: usize, after: &str) -> Result<String, color_eyre::Report> {
     let sources = json!([
         {
             "file": {

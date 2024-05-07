@@ -1,6 +1,10 @@
 use serde_json::Value;
+// use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::mpsc;
 use tokio::task::JoinHandle;
+use std::time::Duration;
 
 use crate::aggs::get_aggs_entries_from_index;
 use crate::delete_records::delete_records_from_index;
@@ -78,27 +82,98 @@ impl App {
         });
         handles.push(_del_handle);
 
-        let _event_tx = event_tx.clone();
-        let _index = index.to_string();
-        let _es_host = self.es_host.clone();
-        let _agg_handle = tokio::spawn(async move {
-            if let Err(e) = get_aggs_entries_from_index(
-                _es_host,
-                _index.as_str(),
-                page_size,
-                agg_sleep,
-                _event_tx,
-            )
-            .await
-            {
-                log::error!("Failed to start get aggs entries from index task: {}", e);
-            };
-        });
-        handles.push(_agg_handle);
+        // let _event_tx = event_tx.clone();
+        // let _event_tx = Arc::new(Mutex::new(mpsc::unbounded_channel()));
+        // let _event_tx_clone = Arc::clone(&_event_tx);
+
+        // let _index = index.to_string();
+        // let _es_host = self.es_host.clone();
+        // let _agg_handle = tokio::spawn(async move {
+        //     if let Err(e) = get_aggs_entries_from_index(
+        //         _es_host,
+        //         _index.as_str(),
+        //         page_size,
+        //         agg_sleep,
+        //         _event_tx,
+        //     )
+        //     .await
+        //     {
+        //         log::error!("Failed to start get aggs entries from index task: {}", e);
+        //     };
+        // });
+
+        // let _agg_handle = tokio::spawn(async move {
+        //     loop {
+                
+        //         match get_aggs_entries_from_index(
+        //             _es_host.clone(),
+        //             _index.as_str(),
+        //             page_size,
+        //             agg_sleep,
+        //             // _event_tx.clone(),
+        //             _event_tx_clone.lock().unwrap().clone()
+        //         )
+        //         .await
+        //         {
+        //             Ok(_) => break, // If the function succeeds, break the loop
+        //             Err(e) => {
+        //                 log::error!("Failed to start get aggs entries from index task: {}", e);
+        //                 // Optionally, you can add a delay before retrying
+        //                 tokio::time::sleep(Duration::from_secs(30)).await;
+        //             }
+        //         };
+        //     }
+        // });
+        // handles.push(_agg_handle);
 
         let _index = index.to_string();
+
+        let is_running = Arc::new(AtomicBool::new(false));
+        // let is_running_clone = Arc::clone(&is_running);
 
         loop {
+            let is_running_clone = Arc::clone(&is_running);
+
+            log::debug!("Starting get aggs entries from index task: {}", _index.as_str());
+
+            let _event_tx = event_tx.clone();
+
+            let _index_clone = index.to_string();
+            let _es_host = self.es_host.clone();
+
+
+            if !is_running_clone.load(Ordering::SeqCst) {
+                let is_running_clone2 = Arc::clone(&is_running_clone);
+                let _agg_handle = tokio::spawn(async move {
+                    is_running_clone2.store(true, Ordering::SeqCst);
+                    loop {
+                        is_running_clone.store(true, Ordering::SeqCst);
+                        match get_aggs_entries_from_index(
+                            _es_host.clone(),
+                            _index_clone.as_str(),
+                            page_size,
+                            agg_sleep,
+                            _event_tx.clone(),
+                        )
+                        .await
+                        {
+                            Ok(_) => break, // If the function succeeds, break the loop
+                            Err(e) => {
+                                log::error!("Failed to start get aggs entries from index task: {}", e);
+                                // Optionally, you can add a delay before retrying
+                                tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+                            }
+                        };
+                    }
+                    is_running_clone2.store(false, Ordering::SeqCst);
+                });
+                // handles.push(_agg_handle);
+            }
+
+            // let _ = _agg_handle.await;
+
+            
+
             if let Some(event) = event_rx.recv().await {
                 let _es_host = self.es_host.clone();
                 if let Err(e) = self

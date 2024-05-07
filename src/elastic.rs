@@ -1,9 +1,10 @@
 use std::io::Read;
 // use color_eyre::config;
 use url::Url;
+use color_eyre::{eyre::Context, Report};
 
 use elasticsearch::{http::transport::Transport, http::transport::TransportBuilder, Elasticsearch};
-use std::error::Error;
+// use std::error::Error;
 
 pub struct HostConfig {
     pub user: Option<String>,
@@ -70,14 +71,14 @@ impl Host {
     //     }
     // }
 
-    pub fn url(&self) -> Result<Url, Box<dyn Error>> {
+    pub fn url(&self) -> Result<Url, Report> {
         let url_str = format!("{}://{}:{}", self.host_scheme, self.host_ip, self.host_port);
-        let url = Url::parse(&url_str)?;
+        let url = Url::parse(&url_str).wrap_err("Failed to parse URL")?;
         Ok(url)
     }
 }
 
-fn create_transport(es_host: Host) -> Result<Transport, Box<dyn Error>> {
+fn create_transport(es_host: Host) -> Result<Transport, Report> {
     let connection_pool =
         elasticsearch::http::transport::SingleNodeConnectionPool::new(es_host.url()?);
     let credentials = elasticsearch::auth::Credentials::Basic(
@@ -95,7 +96,7 @@ fn create_transport(es_host: Host) -> Result<Transport, Box<dyn Error>> {
 
 fn get_certificate_validation(
     cert_path: &str,
-) -> Result<elasticsearch::cert::CertificateValidation, Box<dyn Error>> {
+) -> Result<elasticsearch::cert::CertificateValidation, Report> {
     // check if the cert_path is empty, if it is, return None, otherwise read the cert file and return the Certificate
     match cert_path.is_empty() {
         true => Ok(elasticsearch::cert::CertificateValidation::None),
@@ -110,7 +111,7 @@ fn get_certificate_validation(
     }
 }
 
-pub fn create_client(es_host: Host) -> Result<Elasticsearch, Box<dyn Error>> {
+pub fn create_client(es_host: Host) -> Result<Elasticsearch, Report> {
     let transport = create_transport(es_host)?;
     let client = Elasticsearch::new(transport);
     Ok(client)
