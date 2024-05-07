@@ -1,15 +1,14 @@
-pub mod app;
-pub mod message;
-pub mod elastic;
 pub mod aggs;
-pub mod latest;
-pub mod parse_record;
+pub mod app;
 pub mod delete_records;
+pub mod elastic;
 pub mod init_logging;
+pub mod latest;
+pub mod message;
+pub mod parse_record;
 
 use crate::app::App;
 use crate::init_logging::initialize_logging;
-
 
 async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
     initialize_logging("/Users/stiebing/Documents/scripting_base/watchy_condense_rs/log")?;
@@ -36,23 +35,23 @@ async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
         cert_path,
         Some(false),
         None,
-        Some(false)
+        Some(false),
     );
-  
+
     // TODO initialize_panic_handler()?;
 
-    let mut app = App::new(es_host, 1024,".ds-logs-fim.event-default*",10,100,5,20)?;
+    let mut app = App::new(es_host, 1024, ".ds-logs-fim.event-default*", 10, 100, 5, 20)?;
     app.run().await?;
-  
-    Ok(())
-  }
-  
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-if let Err(e) = tokio_main().await {
-    eprintln!("{} error: Something went wrong", env!("CARGO_PKG_NAME"));
-    Err(e)
-} else {
+
     Ok(())
 }
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    if let Err(e) = tokio_main().await {
+        eprintln!("{} error: Something went wrong", env!("CARGO_PKG_NAME"));
+        Err(e)
+    } else {
+        Ok(())
+    }
 }

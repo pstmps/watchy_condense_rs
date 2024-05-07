@@ -3,13 +3,15 @@ use std::path::PathBuf;
 use color_eyre::eyre::Result;
 use directories::ProjectDirs;
 use lazy_static::lazy_static;
+use std::fmt;
+use time;
 use tracing::error;
 use tracing_error::ErrorLayer;
-use tracing_subscriber::{self, prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt, Layer};
-use tracing_subscriber::fmt::time::LocalTime;
 use tracing_subscriber::fmt::time::FormatTime;
-use time;
-use std::fmt;
+use tracing_subscriber::fmt::time::LocalTime;
+use tracing_subscriber::{
+    self, prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt, Layer,
+};
 
 // struct SystemTime;
 
@@ -23,17 +25,21 @@ use std::fmt;
 //   concat!(env!("CARGO_PKG_VERSION"), "-", env!("VERGEN_GIT_DESCRIBE"), " (", env!("VERGEN_BUILD_DATE"), ")");
 
 lazy_static! {
-  pub static ref PROJECT_NAME: String = env!("CARGO_CRATE_NAME").to_uppercase().to_string();
-  pub static ref DATA_FOLDER: Option<PathBuf> =
-    std::env::var(format!("{}_DATA", PROJECT_NAME.clone())).ok().map(PathBuf::from);
-  pub static ref CONFIG_FOLDER: Option<PathBuf> =
-    std::env::var(format!("{}_CONFIG", PROJECT_NAME.clone())).ok().map(PathBuf::from);
-  pub static ref LOG_ENV: String = format!("{}_LOGLEVEL", PROJECT_NAME.clone());
-  pub static ref LOG_FILE: String = format!("{}.log", env!("CARGO_PKG_NAME"));
+    pub static ref PROJECT_NAME: String = env!("CARGO_CRATE_NAME").to_uppercase().to_string();
+    pub static ref DATA_FOLDER: Option<PathBuf> =
+        std::env::var(format!("{}_DATA", PROJECT_NAME.clone()))
+            .ok()
+            .map(PathBuf::from);
+    pub static ref CONFIG_FOLDER: Option<PathBuf> =
+        std::env::var(format!("{}_CONFIG", PROJECT_NAME.clone()))
+            .ok()
+            .map(PathBuf::from);
+    pub static ref LOG_ENV: String = format!("{}_LOGLEVEL", PROJECT_NAME.clone());
+    pub static ref LOG_FILE: String = format!("{}.log", env!("CARGO_PKG_NAME"));
 }
 
 fn project_directory() -> Option<ProjectDirs> {
-  ProjectDirs::from("com", "kdheepak", env!("CARGO_PKG_NAME"))
+    ProjectDirs::from("com", "kdheepak", env!("CARGO_PKG_NAME"))
 }
 
 // pub fn initialize_panic_handler() -> Result<()> {
@@ -85,56 +91,62 @@ fn project_directory() -> Option<ProjectDirs> {
 // }
 
 pub fn get_data_dir() -> PathBuf {
-  let directory = if let Some(s) = DATA_FOLDER.clone() {
-    s
-  } else if let Some(proj_dirs) = project_directory() {
-    proj_dirs.data_local_dir().to_path_buf()
-  } else {
-    PathBuf::from(".").join(".data")
-  };
-  directory
+    let directory = if let Some(s) = DATA_FOLDER.clone() {
+        s
+    } else if let Some(proj_dirs) = project_directory() {
+        proj_dirs.data_local_dir().to_path_buf()
+    } else {
+        PathBuf::from(".").join(".data")
+    };
+    directory
 }
 
 pub fn get_config_dir() -> PathBuf {
-  let directory = if let Some(s) = CONFIG_FOLDER.clone() {
-    s
-  } else if let Some(proj_dirs) = project_directory() {
-    proj_dirs.config_local_dir().to_path_buf()
-  } else {
-    PathBuf::from(".").join(".config")
-  };
-  directory
+    let directory = if let Some(s) = CONFIG_FOLDER.clone() {
+        s
+    } else if let Some(proj_dirs) = project_directory() {
+        proj_dirs.config_local_dir().to_path_buf()
+    } else {
+        PathBuf::from(".").join(".config")
+    };
+    directory
 }
 
 pub fn initialize_logging(in_directory: &str) -> Result<()> {
-  let mut directory = PathBuf::from(in_directory);
-  if in_directory.is_empty() {
-    directory = get_data_dir();
-  }
-  std::fs::create_dir_all(directory.clone())?;
-  let log_path = directory.join(LOG_FILE.clone());
-  println!("Logging to: {:?}", &log_path);
-  let log_file = std::fs::File::create(log_path)?;
+    let mut directory = PathBuf::from(in_directory);
+    if in_directory.is_empty() {
+        directory = get_data_dir();
+    }
+    std::fs::create_dir_all(directory.clone())?;
+    let log_path = directory.join(LOG_FILE.clone());
+    println!("Logging to: {:?}", &log_path);
+    let log_file = std::fs::File::create(log_path)?;
 
-  let offset = time::UtcOffset::current_local_offset().unwrap_or(time::UtcOffset::UTC);
-  let timer = tracing_subscriber::fmt::time::OffsetTime::new(offset, time::format_description::well_known::Rfc3339);
-  
-  std::env::set_var(
-    "RUST_LOG",
-    std::env::var("RUST_LOG")
-      .or_else(|_| std::env::var(LOG_ENV.clone()))
-      .unwrap_or_else(|_| format!("{}=info", env!("CARGO_CRATE_NAME"))),
-  );
-  let file_subscriber = tracing_subscriber::fmt::layer()
-    .with_file(true)
-    .with_line_number(true)
-    .with_writer(log_file)
-    .with_target(false)
-    .with_ansi(false)
-    .with_timer(timer)
-    .with_filter(tracing_subscriber::filter::EnvFilter::from_default_env());
-  tracing_subscriber::registry().with(file_subscriber).with(ErrorLayer::default()).init();
-  Ok(())
+    let offset = time::UtcOffset::current_local_offset().unwrap_or(time::UtcOffset::UTC);
+    let timer = tracing_subscriber::fmt::time::OffsetTime::new(
+        offset,
+        time::format_description::well_known::Rfc3339,
+    );
+
+    std::env::set_var(
+        "RUST_LOG",
+        std::env::var("RUST_LOG")
+            .or_else(|_| std::env::var(LOG_ENV.clone()))
+            .unwrap_or_else(|_| format!("{}=info", env!("CARGO_CRATE_NAME"))),
+    );
+    let file_subscriber = tracing_subscriber::fmt::layer()
+        .with_file(true)
+        .with_line_number(true)
+        .with_writer(log_file)
+        .with_target(false)
+        .with_ansi(false)
+        .with_timer(timer)
+        .with_filter(tracing_subscriber::filter::EnvFilter::from_default_env());
+    tracing_subscriber::registry()
+        .with(file_subscriber)
+        .with(ErrorLayer::default())
+        .init();
+    Ok(())
 }
 
 /// Similar to the `std::dbg!` macro, but generates `tracing` events rather

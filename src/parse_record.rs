@@ -1,11 +1,13 @@
-use serde_json::Value;
 use serde_json::json;
+use serde_json::Value;
 use tokio::sync::mpsc;
 
 use crate::message::Message;
 
-pub async fn parse_record(record: Value, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
-
+pub async fn parse_record(
+    record: Value,
+    tx: mpsc::Sender<Message>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let last_event = record;
 
     let event_action = last_event
@@ -41,17 +43,16 @@ pub async fn parse_record(record: Value, tx: mpsc::Sender<Message>) -> Result<()
         .unwrap_or("empty_file_path");
 
     let record_id_and_index = if event_action == "moved" || event_action == "deleted" {
-            ("no_id".to_string(),"no_index".to_string())
-        } else {
-            
-            let record_id = last_event
+        ("no_id".to_string(), "no_index".to_string())
+    } else {
+        let record_id = last_event
             .get("hits")
             .and_then(|v| v.get("hits"))
             .and_then(|v| v.get(0))
             .and_then(|v| v.get("_id"))
             .and_then(|v| v.as_str())
             .unwrap_or("empty_record_id");
-    
+
         let record_index = last_event
             .get("hits")
             .and_then(|v| v.get("hits"))
@@ -59,9 +60,9 @@ pub async fn parse_record(record: Value, tx: mpsc::Sender<Message>) -> Result<()
             .and_then(|v| v.get("_index"))
             .and_then(|v| v.as_str())
             .unwrap_or("empty_record_index");
-        
-            (record_id.to_string(),record_index.to_string())
-        };
+
+        (record_id.to_string(), record_index.to_string())
+    };
 
     // println!("File Path: {:?}", file_path);
     // println!("Record ID: {:?}", record_id_and_index);

@@ -1,44 +1,71 @@
-use serde_json::Value;
-use tokio::sync::mpsc;
 use elasticsearch::SearchParts;
+use serde_json::{json, Value};
+use tokio::sync::mpsc;
 
 use crate::elastic::create_client;
-use crate::message::Message;
 use crate::elastic::Host;
+use crate::message::Message;
 
 // TODO use json! macro to create the query
 
-pub async fn get_last_event_for_record(es_host: Host, index: &str, record: &str, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
-
+pub async fn get_last_event_for_record(
+    es_host: Host,
+    index: &str,
+    record: &str,
+    tx: mpsc::Sender<Message>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let client = create_client(es_host)?;
 
     let page_size = 1; // only get the last event
 
-    let fields = vec!["file.type", "file.uri", "@timestamp", "event.type", "event.action"];
-    let fields: Vec<Value> = fields.into_iter().map(|s| Value::String(s.to_string())).collect();
+    let fields = vec![
+        "file.type",
+        "file.uri",
+        "@timestamp",
+        "event.type",
+        "event.action",
+    ];
+    let fields: Vec<Value> = fields
+        .into_iter()
+        .map(|s| Value::String(s.to_string()))
+        .collect();
     let fields = serde_json::to_string(&fields)?;
 
-    let query = format!(
-        r#"{{
-                "size": "{}",
-                "_source": {},
-                "sort": [
-                    {{"@timestamp": {{"order": "desc"}}}}
-                ],
-                "query": {{
-                    "bool": {{
-                      "must": [
-                        {{"term": 
-                        {{ "file.uri" : "{}" }}}}
-                        ]
-                    }}
-                  }}
-        }}"#,
-            page_size,
-            fields,
-            record
-        );
-        
+    // let query = format!(
+    //     r#"{{
+    //             "size": "{}",
+    //             "_source": {},
+    //             "sort": [
+    //                 {{"@timestamp": {{"order": "desc"}}}}
+    //             ],
+    //             "query": {{
+    //                 "bool": {{
+    //                   "must": [
+    //                     {{"term":
+    //                     {{ "file.uri" : "{}" }}}}
+    //                     ]
+    //                 }}
+    //               }}
+    //     }}"#,
+    //         page_size,
+    //         fields,
+    //         record
+    //     );
+
+    let query = json!({
+        "size": page_size,
+        "_source": fields,
+        "sort": [{"@timestamp": {"order": "desc"}}],
+        "query": {
+            "bool": {
+              "must": [
+                {"term":
+                { "file.uri" : record }}
+                ]
+            }
+          }
+    })
+    .to_string();
 
     let value: serde_json::Value = serde_json::from_str(&query)?;
 
@@ -63,5 +90,4 @@ pub async fn get_last_event_for_record(es_host: Host, index: &str, record: &str,
     tx.send(message).await?;
 
     Ok(())
-
 }

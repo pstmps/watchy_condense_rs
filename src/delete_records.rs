@@ -1,15 +1,21 @@
-use serde_json::Value;
+// use serde::Serialize;
+use elasticsearch::DeleteByQueryParts;
 use serde_json::json;
+use serde_json::Value;
+use std::collections::HashSet;
 use tokio::sync::mpsc;
 use tokio::time::{sleep, Duration};
-use std::collections::HashSet;
-use elasticsearch::DeleteByQueryParts;
 
 use crate::elastic::create_client;
 use crate::elastic::Host;
 
-pub async fn delete_records_from_index(es_host: Host, index: &str, buffer_size: usize, timeout: u64, mut delete_rx: mpsc::Receiver<Value>) -> Result<(), Box<dyn std::error::Error>> {
-
+pub async fn delete_records_from_index(
+    es_host: Host,
+    index: &str,
+    buffer_size: usize,
+    timeout: u64,
+    mut delete_rx: mpsc::Receiver<Value>,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut file_paths = HashSet::new();
     let mut records = HashSet::new();
 
@@ -25,19 +31,19 @@ pub async fn delete_records_from_index(es_host: Host, index: &str, buffer_size: 
                         .and_then(|v| v.as_str())
                         .unwrap_or("empty_file_path")
                         .to_string();
-    
+
                     let record_id = record
                         .get("record_id")
                         .and_then(|v| v.as_str())
                         .unwrap_or("empty_record_id")
                         .to_string();
-    
+
                     let record_index = record
                         .get("record_index")
                         .and_then(|v| v.as_str())
                         .unwrap_or("empty_record_index")
                         .to_string();
-    
+
                     file_paths.insert(file_path);
                     records.insert((record_id, record_index));
                 }
@@ -49,39 +55,87 @@ pub async fn delete_records_from_index(es_host: Host, index: &str, buffer_size: 
 
                     log::info!("Deleting records after timeout reached: {:?}", file_paths);
 
-                    let query = generate_query(&file_paths, &records).unwrap();
+                    flush_records(&mut file_paths, &mut records, &es_host, index).await?;
 
-                    log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
+                    // let query = generate_query(&file_paths, &records).unwrap();
 
-                    let response = delete_records(es_host.clone(), index, query).await?;
+                    // // log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
+                    // if log::log_enabled!(log::Level::Debug) {
+                    //     if let Ok(query_string) = serde_json::to_string_pretty(&query) {
+                    //         log::debug!("Query: {}", query_string);
+                    //     } else {
+                    //         log::error!("Failed to serialize query to a pretty string");
+                    //     }
+                    // }
 
-                    log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
+                    // let response = delete_records(es_host.clone(), index, query).await?;
 
-                    file_paths.clear();
-                    records.clear();
+                    // // log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
+                    // if log::log_enabled!(log::Level::Debug) {
+                    //     if let Ok(response_string) = serde_json::to_string_pretty(&response) {
+                    //         log::debug!("Response: {}", response_string);
+                    //     } else {
+                    //         log::error!("Failed to serialize response to a pretty string");
+                    //     }
+                    // }
+
+                    // let query = generate_query(&file_paths, &records).unwrap();
+                    // log_debug_pretty("Query", &query);
+
+                    // let response = delete_records(es_host.clone(), index, query).await?;
+                    // log_debug_pretty("Response", &response);
+
+                    // file_paths.clear();
+                    // records.clear();
                 }
             }
         }
-    
+
         if file_paths.len() > buffer_size {
-            // println!("[+] [+] Deleting records: {:?}", file_paths);
-            // println!("[+] [+] Deleting records: {:?}", records);
-            log::info!("Deleting records after buffer size reached: {:?}", file_paths);
-            let query = generate_query(&file_paths, &records).unwrap();
-            log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
-            let response = delete_records(es_host.clone(), index, query).await?;
-            log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
-            //println!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
-            // delete records
-            file_paths.clear();
-            records.clear();
+            log::debug!(
+                "Deleting records after buffer size reached: {:?}",
+                file_paths
+            );
+            // let query = generate_query(&file_paths, &records).unwrap();
+            // log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
+            // let response = delete_records(es_host.clone(), index, query).await?;
+            // log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
+
+            flush_records(&mut file_paths, &mut records, &es_host, index).await?;
         }
     }
-
 }
 
+async fn flush_records(
+    file_paths: &mut HashSet<String>,
+    records: &mut HashSet<(String, String)>,
+    es_host: &Host,
+    index: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let query = generate_query(&*file_paths, &*records)?;
+    log_debug_pretty("Query", &query);
+    let response = delete_records(es_host.clone(), index, query).await?;
+    log_debug_pretty("Response", &response);
+    // clear the file paths and records
+    file_paths.clear();
+    records.clear();
+    Ok(())
+}
 
-fn generate_query(file_paths: &HashSet<String>, records: &HashSet<(String,String)>) -> Result<Value, Box<dyn std::error::Error>> {
+fn log_debug_pretty<T: serde::Serialize>(label: &str, value: &T) {
+    if log::log_enabled!(log::Level::Debug) {
+        if let Ok(value_string) = serde_json::to_string_pretty(value) {
+            log::debug!("{}: {}", label, value_string);
+        } else {
+            log::error!("Failed to serialize {} to a pretty string", label);
+        }
+    }
+}
+
+fn generate_query(
+    file_paths: &HashSet<String>,
+    records: &HashSet<(String, String)>,
+) -> Result<Value, Box<dyn std::error::Error>> {
     let mut file_paths_query = vec![];
     let mut records_query = vec![];
 
@@ -134,17 +188,20 @@ fn generate_query(file_paths: &HashSet<String>, records: &HashSet<(String,String
     Ok(query)
 }
 
-async fn delete_records(es_host: Host,index: &str, query: Value) -> Result<Value, Box<dyn std::error::Error>> {
-   let client = create_client(es_host.clone())?;
+async fn delete_records(
+    es_host: Host,
+    index: &str,
+    query: Value,
+) -> Result<Value, Box<dyn std::error::Error>> {
+    let client = create_client(es_host.clone())?;
 
-   let response = client
-            .delete_by_query(DeleteByQueryParts::Index(&[index]))
-            .body(query)
-            .send()
-            .await?;
+    let response = client
+        .delete_by_query(DeleteByQueryParts::Index(&[index]))
+        .body(query)
+        .send()
+        .await?;
 
     let json_response = response.json::<Value>().await?;
 
     Ok(json_response)
-
 }

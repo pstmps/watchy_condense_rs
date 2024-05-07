@@ -1,16 +1,21 @@
-use tokio::sync::mpsc;
-use tokio::time::{sleep, Duration};
 use elasticsearch::SearchParts;
 use serde_json::{json, Value};
+use tokio::sync::mpsc;
+use tokio::time::{sleep, Duration};
 
 use crate::elastic::create_client;
-use crate::message::Message;
 use crate::elastic::Host;
+use crate::message::Message;
 
 // TODO use json! macro to create the query
 
-pub async fn get_aggs_entries_from_index(es_host: Host, index: &str, page_size: usize, timeout: u64, tx: mpsc::Sender<Message>) -> Result<(), Box<dyn std::error::Error>> {
-
+pub async fn get_aggs_entries_from_index(
+    es_host: Host,
+    index: &str,
+    page_size: usize,
+    timeout: u64,
+    tx: mpsc::Sender<Message>,
+) -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let client = create_client(es_host.clone())?;
 
@@ -19,9 +24,8 @@ pub async fn get_aggs_entries_from_index(es_host: Host, index: &str, page_size: 
         let mut hits = 1;
 
         while hits > 0 {
-
             hits = 0;
-            
+
             // let json_query = format!(
             //     r#"{{
             //             "size": 0,
@@ -50,7 +54,7 @@ pub async fn get_aggs_entries_from_index(es_host: Host, index: &str, page_size: 
             let json_query = generate_query(page_size, &after)?;
 
             let value: serde_json::Value = serde_json::from_str(&json_query)?;
-        
+
             let response = client
                 .search(SearchParts::Index(&[index]))
                 .body(value)
@@ -58,19 +62,19 @@ pub async fn get_aggs_entries_from_index(es_host: Host, index: &str, page_size: 
                 .await?;
 
             log::debug!("Response from ES: {:?}", response);
-        
+
             let response_body = match response.json::<Value>().await {
                 Ok(body) => body,
                 Err(_) => continue,
             };
 
-            let aggs = match response_body["aggregations"]["unique_event_types"]["buckets"].as_array() {
-                Some(aggs) => aggs,
-                None => continue,
-            };
+            let aggs =
+                match response_body["aggregations"]["unique_event_types"]["buckets"].as_array() {
+                    Some(aggs) => aggs,
+                    None => continue,
+                };
 
             for agg in aggs {
-
                 // let doc_count = agg["doc_count"].as_u64().unwrap();
                 let doc_count = match agg["doc_count"].as_u64() {
                     Some(value) => value,
@@ -81,32 +85,30 @@ pub async fn get_aggs_entries_from_index(es_host: Host, index: &str, page_size: 
                 };
 
                 if doc_count > 1 {
-
                     let agg_clone = agg.clone();
                     let _tx = tx.clone();
                     tokio::spawn(async move {
-
-                        let message = Message::Aggregate{
+                        let message = Message::Aggregate {
                             event_type: "Aggregate".to_string(),
-                            payload: agg_clone};
+                            payload: agg_clone,
+                        };
 
                         // _tx.send(message).await.unwrap();
                         if let Err(e) = _tx.send(message).await {
                             log::error!("Failed to send message: {}", e);
                         }
-
                     });
-                    
-                }   // if doc_count > 1
+                } // if doc_count > 1
                 hits += 1;
-
             }
 
             if hits == 0 {
                 break;
             }
 
-            after = response_body["aggregations"]["unique_event_types"]["after_key"]["file"].clone().to_string();
+            after = response_body["aggregations"]["unique_event_types"]["after_key"]["file"]
+                .clone()
+                .to_string();
 
             // after = format!(
             //     r#"
@@ -114,22 +116,19 @@ pub async fn get_aggs_entries_from_index(es_host: Host, index: &str, page_size: 
             //         "after": {{
             //             "file": {}
             //         }}
-            
+
             //         "#,
             //     serde_json::to_string(&after_key).unwrap()
             // );
         }
 
         log::info!("Aggs task sleeping for {} seconds", timeout);
-            //sleep for $timeout seconds
+        //sleep for $timeout seconds
         sleep(Duration::from_secs(timeout)).await;
-
-    }    
-
+    }
 }
 
 fn generate_query(page_size: usize, after: &str) -> Result<String, Box<dyn std::error::Error>> {
-
     let sources = json!([
         {
             "file": {
@@ -164,7 +163,8 @@ fn generate_query(page_size: usize, after: &str) -> Result<String, Box<dyn std::
                 "composite": composite
             }
         }
-    }).to_string();
+    })
+    .to_string();
 
     log::debug!("Query: {}", query);
 

@@ -24,3 +24,4 @@ tracing = "0.1.40"
 tracing-error = "0.2.0"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "serde", "fmt", "std", "time","local-time"] }
 url = "2.5.0"
+serde = "1.0.200"

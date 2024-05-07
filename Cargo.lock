@@ -2158,6 +2158,7 @@ dependencies = [
  "reqwest 0.12.4",
  "rustls 0.23.5",
  "rustls-pemfile 2.1.2",
+ "serde",
  "serde_json",
  "time",
  "tokio",
