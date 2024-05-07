@@ -32,15 +32,15 @@ impl App {
         agg_sleep: u64,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         Ok(Self {
-            es_host: es_host,
+            es_host,
             should_quit: false,
             should_suspend: false,
-            action_buffer_size: action_buffer_size,
+            action_buffer_size,
             index: index.to_string(),
-            page_size: page_size,
-            buffer_size: buffer_size,
-            del_timeout: del_timeout,
-            agg_sleep: agg_sleep,
+            page_size,
+            buffer_size,
+            del_timeout,
+            agg_sleep,
         })
     }
 

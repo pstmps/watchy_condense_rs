@@ -149,7 +149,7 @@ fn generate_query(page_size: usize, after: &str) -> Result<String, Box<dyn std::
     //     composite["after"] = after_value;
     // }
     if !after.is_empty() {
-        if let Ok(after_value) = serde_json::from_str::<Value>(&after) {
+        if let Ok(after_value) = serde_json::from_str::<Value>(after) {
             composite["after"] = after_value;
         } else {
             log::error!("Failed to parse after as JSON");

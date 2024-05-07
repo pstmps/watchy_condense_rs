@@ -1,8 +1,21 @@
 use std::io::Read;
+// use color_eyre::config;
 use url::Url;
 
 use elasticsearch::{http::transport::Transport, http::transport::TransportBuilder, Elasticsearch};
 use std::error::Error;
+
+pub struct HostConfig {
+    pub user: Option<String>,
+    pub password: Option<String>,
+    pub host_ip: Option<String>,
+    pub host_port: Option<u16>,
+    pub host_scheme: Option<String>,
+    pub cert_path: Option<String>,
+    // pub verify_certs: Option<bool>,
+    // pub ca_certs: Option<String>,
+    // pub ssl_show_warn: Option<bool>,
+}
 
 #[derive(Clone)]
 pub struct Host {
@@ -12,35 +25,50 @@ pub struct Host {
     host_port: u16,
     host_scheme: String,
     cert_path: String,
-    verify_certs: bool,
-    ca_certs: Option<String>,
-    ssl_show_warn: bool,
+    // verify_certs: bool,
+    // ca_certs: Option<String>,
+    // ssl_show_warn: bool,
 }
 
 impl Host {
-    pub fn new(
-        user: Option<String>,
-        password: Option<String>,
-        host_ip: Option<String>,
-        host_port: Option<u16>,
-        host_scheme: Option<String>,
-        cert_path: Option<String>,
-        verify_certs: Option<bool>,
-        ca_certs: Option<String>,
-        ssl_show_warn: Option<bool>,
-    ) -> Self {
+    pub fn new(config: HostConfig) -> Self {
         Self {
-            user: user.unwrap_or_else(|| "default_user".to_string()),
-            password: password.unwrap_or_else(|| "default_password".to_string()),
-            host_ip: host_ip.unwrap_or_else(|| "localhost".to_string()),
-            host_port: host_port.unwrap_or(9200),
-            host_scheme: host_scheme.unwrap_or_else(|| "http".to_string()),
-            cert_path: cert_path.unwrap_or_else(|| "".to_string()),
-            verify_certs: verify_certs.unwrap_or(false),
-            ca_certs: ca_certs,
-            ssl_show_warn: ssl_show_warn.unwrap_or(false),
+            user: config.user.unwrap_or_else(|| "default_user".to_string()),
+            password: config
+                .password
+                .unwrap_or_else(|| "default_password".to_string()),
+            host_ip: config.host_ip.unwrap_or_else(|| "localhost".to_string()),
+            host_port: config.host_port.unwrap_or(9200),
+            host_scheme: config.host_scheme.unwrap_or_else(|| "http".to_string()),
+            cert_path: config.cert_path.unwrap_or_default(),
+            // verify_certs: config.verify_certs.unwrap_or(false),
+            // ca_certs: config.ca_certs,
+            // ssl_show_warn: config.ssl_show_warn.unwrap_or(false),
         }
     }
+    // pub fn new(
+    //     user: Option<String>,
+    //     password: Option<String>,
+    //     host_ip: Option<String>,
+    //     host_port: Option<u16>,
+    //     host_scheme: Option<String>,
+    //     cert_path: Option<String>,
+    //     verify_certs: Option<bool>,
+    //     ca_certs: Option<String>,
+    //     ssl_show_warn: Option<bool>,
+    // ) -> Self {
+    //     Self {
+    //         user: user.unwrap_or_else(|| "default_user".to_string()),
+    //         password: password.unwrap_or_else(|| "default_password".to_string()),
+    //         host_ip: host_ip.unwrap_or_else(|| "localhost".to_string()),
+    //         host_port: host_port.unwrap_or(9200),
+    //         host_scheme: host_scheme.unwrap_or_else(|| "http".to_string()),
+    //         cert_path: cert_path.unwrap_or_default(),
+    //         verify_certs: verify_certs.unwrap_or(false),
+    //         ca_certs,
+    //         ssl_show_warn: ssl_show_warn.unwrap_or(false),
+    //     }
+    // }
 
     pub fn url(&self) -> Result<Url, Box<dyn Error>> {
         let url_str = format!("{}://{}:{}", self.host_scheme, self.host_ip, self.host_port);
@@ -90,6 +118,8 @@ pub fn create_client(es_host: Host) -> Result<Elasticsearch, Box<dyn Error>> {
 
 #[cfg(test)]
 mod tests {
+    use color_eyre::config;
+
     use super::*;
 
     #[tokio::test]
@@ -107,17 +137,31 @@ mod tests {
         let es_user = env::var("ES_USER").ok();
         let es_password = env::var("ES_PASSWORD").ok();
 
-        let es_host = Host::new(
-            es_user,
-            es_password,
-            es_ip,
-            es_port.map(|p| p.parse::<u16>().unwrap()),
-            Some("https".to_string()),
+        let config = HostConfig {
+            user: es_user,
+            password: es_password,
+            host_ip: es_ip,
+            host_port: es_port.map(|p| p.parse::<u16>().unwrap()),
+            host_scheme: Some("https".to_string()),
             cert_path,
-            Some(false),
-            None,
-            Some(true),
-        );
+            // verify_certs: Some(true),
+            // ca_certs: None,
+            // ssl_show_warn: Some(true),
+        };
+
+        let es_host = Host::new(config);
+
+        // let es_host = Host::new(
+        //     es_user,
+        //     es_password,
+        //     es_ip,
+        //     es_port.map(|p| p.parse::<u16>().unwrap()),
+        //     Some("https".to_string()),
+        //     cert_path,
+        //     Some(false),
+        //     None,
+        //     Some(true),
+        // );
 
         let client = create_client(es_host).expect("Failed to create Elasticsearch client");
 
@@ -145,17 +189,31 @@ mod tests {
         let es_user = env::var("ES_USER").ok();
         let es_password = env::var("ES_PASSWORD").ok();
 
-        let es_host = Host::new(
-            es_user,
-            es_password,
-            es_ip,
-            es_port.map(|p| p.parse::<u16>().unwrap()),
-            Some("https".to_string()),
-            Some("".to_string()),
-            Some(false),
-            None,
-            Some(false),
-        );
+        let config = HostConfig {
+            user: es_user,
+            password: es_password,
+            host_ip: es_ip,
+            host_port: es_port.map(|p| p.parse::<u16>().unwrap()),
+            host_scheme: Some("https".to_string()),
+            cert_path: None,
+            // verify_certs: Some(false),
+            // ca_certs: None,
+            // ssl_show_warn: Some(false),
+        };
+
+        let es_host = Host::new(config);
+
+        // let es_host = Host::new(
+        //     es_user,
+        //     es_password,
+        //     es_ip,
+        //     es_port.map(|p| p.parse::<u16>().unwrap()),
+        //     Some("https".to_string()),
+        //     Some("".to_string()),
+        //     Some(false),
+        //     None,
+        //     Some(false),
+        // );
 
         let client = create_client(es_host).expect("Failed to create Elasticsearch client");
 

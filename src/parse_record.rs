@@ -78,7 +78,7 @@ pub async fn parse_record(
 
     let message = Message::Delete {
         event_type: event_type.to_string(),
-        payload: payload,
+        payload,
     };
 
     tx.send(message).await?;

@@ -51,17 +51,31 @@ async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
     let es_user = env::var("ES_USER").ok();
     let es_password = env::var("ES_PASSWORD").ok();
 
-    let es_host = elastic::Host::new(
-        es_user,
-        es_password,
-        es_ip,
-        es_port.map(|p| p.parse::<u16>().unwrap()),
-        Some("https".to_string()),
+    let config = elastic::HostConfig {
+        user: es_user.clone(),
+        password: es_password.clone(),
+        host_ip: es_ip.clone(),
+        host_port: es_port.map(|p| p.parse::<u16>().unwrap()),
+        host_scheme: Some("https".to_string()),
         cert_path,
-        Some(false),
-        None,
-        Some(false),
-    );
+        // verify_certs: Some(false),
+        // ca_certs: None,
+        // ssl_show_warn: Some(true),
+    };
+
+    let es_host = elastic::Host::new(config);
+
+    // let es_host = elastic::Host::new(
+    //     es_user,
+    //     es_password,
+    //     es_ip,
+    //     es_port.map(|p| p.parse::<u16>().unwrap()),
+    //     Some("https".to_string()),
+    //     cert_path,
+    //     Some(false),
+    //     None,
+    //     Some(false),
+    // );
 
     // TODO initialize_panic_handler()?;
 
