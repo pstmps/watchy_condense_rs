@@ -18,7 +18,7 @@ pub struct App {
     pub page_size: usize,
     pub buffer_size: usize,
     pub del_timeout: u64,
-    pub agg_timeout: u64,
+    pub agg_sleep: u64,
 }
 
 impl App {
@@ -29,7 +29,7 @@ impl App {
         page_size: usize,
         buffer_size: usize,
         del_timeout: u64,
-        agg_timeout: u64,
+        agg_sleep: u64,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         Ok(Self {
             es_host: es_host,
@@ -40,7 +40,7 @@ impl App {
             page_size: page_size,
             buffer_size: buffer_size,
             del_timeout: del_timeout,
-            agg_timeout: agg_timeout,
+            agg_sleep: agg_sleep,
         })
     }
 
@@ -54,17 +54,11 @@ impl App {
             self.action_buffer_size
         );
 
-        // let index = ".ds-logs-fim.event-default*";
-        // let page_size = 10;
-        // let buffer_size = 100;
-
-        // let del_timeout = 5;
-        // let agg_timeout = 20;
         let index = self.index.clone();
         let page_size = self.page_size;
         let buffer_size = self.buffer_size;
         let del_timeout = self.del_timeout;
-        let agg_timeout = self.agg_timeout;
+        let agg_sleep = self.agg_sleep;
 
         let mut handles = Vec::new();
         let _index = index.to_string();
@@ -92,7 +86,7 @@ impl App {
                 _es_host,
                 _index.as_str(),
                 page_size,
-                agg_timeout,
+                agg_sleep,
                 _event_tx,
             )
             .await
@@ -121,12 +115,12 @@ impl App {
                     log::error!("Failed to process events: {}", e);
                 };
             }
-            if self.should_quit {
-                return Ok(());
-            }
-            if self.should_suspend {
-                return Ok(());
-            }
+            // if self.should_quit {
+            //     return Ok(());
+            // }
+            // if self.should_suspend {
+            //     return Ok(());
+            // }
         }
     }
 

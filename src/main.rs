@@ -1,3 +1,6 @@
+use dotenv::dotenv;
+use std::env;
+
 pub mod aggs;
 pub mod app;
 pub mod delete_records;
@@ -11,12 +14,34 @@ use crate::app::App;
 use crate::init_logging::initialize_logging;
 
 async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
-    initialize_logging("/Users/stiebing/Documents/scripting_base/watchy_condense_rs/log")?;
-
-    use dotenv::dotenv;
-    use std::env;
-
     dotenv().ok();
+
+    let log_path = env::var("CONDENSE_LOG_PATHd").unwrap_or_else(|_| "log".to_string());
+
+    initialize_logging(&log_path)?;
+
+    let index =
+        env::var("CONDENSE_INDEX").unwrap_or_else(|_| ".ds-logs-fim.event-default*".to_string());
+
+    let action_buffer_size = env::var("CONDENSE_ACTION_BUFFER_SIZE")
+        .unwrap_or_else(|_| "1024".to_string())
+        .parse::<usize>()?;
+
+    let page_size = env::var("CONDENSE_PAGE_SIZE")
+        .unwrap_or_else(|_| "10".to_string())
+        .parse::<usize>()?;
+
+    let buffer_size = env::var("CONDENSE_DELETE_BUFFER")
+        .unwrap_or_else(|_| "100".to_string())
+        .parse::<usize>()?;
+
+    let del_timeout = env::var("CONDENSE_DELETE_TIMEOUT")
+        .unwrap_or_else(|_| "5".to_string())
+        .parse::<u64>()?;
+
+    let agg_sleep = env::var("CONDENSE_AGG_SLEEP")
+        .unwrap_or_else(|_| "20".to_string())
+        .parse::<u64>()?;
 
     let es_ip = env::var("ES_IP").ok();
     let es_port = env::var("ES_PORT").ok();
@@ -40,7 +65,15 @@ async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
 
     // TODO initialize_panic_handler()?;
 
-    let mut app = App::new(es_host, 1024, ".ds-logs-fim.event-default*", 10, 100, 5, 20)?;
+    let mut app = App::new(
+        es_host,
+        action_buffer_size,
+        &index,
+        page_size,
+        buffer_size,
+        del_timeout,
+        agg_sleep,
+    )?;
     app.run().await?;
 
     Ok(())

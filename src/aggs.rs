@@ -13,7 +13,7 @@ pub async fn get_aggs_entries_from_index(
     es_host: Host,
     index: &str,
     page_size: usize,
-    timeout: u64,
+    agg_sleep: u64,
     tx: mpsc::Sender<Message>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     loop {
@@ -122,9 +122,9 @@ pub async fn get_aggs_entries_from_index(
             // );
         }
 
-        log::info!("Aggs task sleeping for {} seconds", timeout);
-        //sleep for $timeout seconds
-        sleep(Duration::from_secs(timeout)).await;
+        log::info!("Aggs task sleeping for {} seconds", agg_sleep);
+        //sleep for $agg_sleep seconds
+        sleep(Duration::from_secs(agg_sleep)).await;
     }
 }
 

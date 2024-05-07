@@ -3,12 +3,12 @@ use std::path::PathBuf;
 use color_eyre::eyre::Result;
 use directories::ProjectDirs;
 use lazy_static::lazy_static;
-use std::fmt;
+// use std::fmt;
 use time;
-use tracing::error;
+// use tracing::error;
 use tracing_error::ErrorLayer;
-use tracing_subscriber::fmt::time::FormatTime;
-use tracing_subscriber::fmt::time::LocalTime;
+// use tracing_subscriber::fmt::time::FormatTime;
+// use tracing_subscriber::fmt::time::LocalTime;
 use tracing_subscriber::{
     self, prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt, Layer,
 };
