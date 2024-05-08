@@ -93,6 +93,8 @@ pub async fn get_aggs_entries_from_index(
                             payload: agg_clone,
                         };
 
+                        log::debug!("Sending message: {:?}", &message);
+
                         // _tx.send(message).await.unwrap();
                         if let Err(e) = _tx.send(message).await {
                             log::error!("Failed to send message: {}", e);

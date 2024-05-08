@@ -4,6 +4,7 @@ use serde_json::json;
 use serde_json::Value;
 use std::collections::HashSet;
 use tokio::sync::mpsc;
+use tokio::sync::broadcast;
 use tokio::time::{sleep, Duration};
 
 use crate::elastic::create_client;
@@ -14,8 +15,9 @@ pub async fn delete_records_from_index(
     index: &str,
     buffer_size: usize,
     timeout: u64,
-    mut delete_rx: mpsc::Receiver<Value>,
+    mut delete_rx: broadcast::Receiver<Value>,
 ) -> Result<(), Box<dyn std::error::Error>> {
+
     let mut file_paths = HashSet::new();
     let mut records = HashSet::new();
 
@@ -23,31 +25,66 @@ pub async fn delete_records_from_index(
     loop {
         tokio::select! {
             // Wait for a new record or timeout
-            record = delete_rx.recv() => {
-                log::debug!("Received record: {:?}", record);
-                if let Some(record) = record {
-                    let file_path = record
-                        .get("file_path")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("empty_file_path")
-                        .to_string();
 
-                    let record_id = record
-                        .get("record_id")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("empty_record_id")
-                        .to_string();
+            result = delete_rx.recv() => {
+                match result {
+                    Ok(record) => {
+                        log::debug!("Received record: {:?}", record);
+                        let file_path = record
+                            .get("file_path")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("empty_file_path")
+                            .to_string();
 
-                    let record_index = record
-                        .get("record_index")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("empty_record_index")
-                        .to_string();
+                        let record_id = record
+                            .get("record_id")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("empty_record_id")
+                            .to_string();
 
-                    file_paths.insert(file_path);
-                    records.insert((record_id, record_index));
+                        let record_index = record
+                            .get("record_index")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("empty_record_index")
+                            .to_string();
+
+                        file_paths.insert(file_path);
+                        records.insert((record_id, record_index));
+                    },
+                    Err(e) => {
+                        log::error!("Error receiving record: {}", e);
+                        // Handle the error
+                    }
                 }
             }
+
+
+
+            // record = delete_rx.recv() => {
+            //     log::debug!("Received record: {:?}", record);
+            //     if let Some(record) = record {
+            //         let file_path = record
+            //             .get("file_path")
+            //             .and_then(|v| v.as_str())
+            //             .unwrap_or("empty_file_path")
+            //             .to_string();
+
+            //         let record_id = record
+            //             .get("record_id")
+            //             .and_then(|v| v.as_str())
+            //             .unwrap_or("empty_record_id")
+            //             .to_string();
+
+            //         let record_index = record
+            //             .get("record_index")
+            //             .and_then(|v| v.as_str())
+            //             .unwrap_or("empty_record_index")
+            //             .to_string();
+
+            //         file_paths.insert(file_path);
+            //         records.insert((record_id, record_index));
+            //     }
+            // }
             // Timeout after 5 seconds
             _ = sleep(Duration::from_secs(timeout)) => {
                 log::info!("Timeout reached");

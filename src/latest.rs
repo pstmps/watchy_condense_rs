@@ -1,6 +1,7 @@
 use elasticsearch::SearchParts;
 use serde_json::{json, Value};
 use tokio::sync::mpsc;
+use tracing::field;
 
 use crate::elastic::create_client;
 use crate::elastic::Host;
@@ -25,11 +26,14 @@ pub async fn get_last_event_for_record(
         "event.type",
         "event.action",
     ];
-    let fields: Vec<Value> = fields
-        .into_iter()
-        .map(|s| Value::String(s.to_string()))
-        .collect();
-    let fields = serde_json::to_string(&fields)?;
+
+    // let fields = vec!["file.uri"];
+
+    // let fields: Vec<Value> = fields
+    //     .into_iter()
+    //     .map(|s| Value::String(s.to_string()))
+    //     .collect();
+    // let fields = serde_json::to_string(&fields)?;
 
     // let query = format!(
     //     r#"{{
@@ -66,6 +70,8 @@ pub async fn get_last_event_for_record(
           }
     })
     .to_string();
+
+    log::debug!("Query: {}", query);
 
     let value: serde_json::Value = serde_json::from_str(&query)?;
 
