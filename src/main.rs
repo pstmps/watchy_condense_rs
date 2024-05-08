@@ -16,9 +16,13 @@ use crate::init_logging::initialize_logging;
 async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
 
-    let log_path = env::var("CONDENSE_LOG_PATHd").unwrap_or_else(|_| "log".to_string());
+    let log_path = env::var("CONDENSE_LOG_PATH").unwrap_or_else(|_| "log".to_string());
 
-    initialize_logging(&log_path)?;
+    let log_to_console = env::var("CONDENSE_LOG_CONSOLE")
+        .unwrap_or_else(|_| "true".to_string())
+        .parse::<bool>()?;
+
+    initialize_logging(&log_path, log_to_console)?;
 
     let index =
         env::var("CONDENSE_INDEX").unwrap_or_else(|_| ".ds-logs-fim.event-default*".to_string());
@@ -39,7 +43,7 @@ async fn tokio_main() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap_or_else(|_| "5".to_string())
         .parse::<u64>()?;
 
-    let agg_sleep = env::var("CONDENSE_AGG_SLEEP")
+    let agg_sleep = env::var("CONDENSE_AGGREGATION_SLEEP")
         .unwrap_or_else(|_| "20".to_string())
         .parse::<u64>()?;
 

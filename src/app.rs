@@ -81,6 +81,7 @@ impl App {
         let mut del_handle: Option<tokio::task::JoinHandle<()>> = None;
 
         loop {
+            // check if aggregation task is runnning, if not, restart it
             if let Some(handle) = &agg_handle {
                 if handle.is_finished() {
                     // The task has completed, you can start a new one
@@ -118,6 +119,7 @@ impl App {
                 }));
             }
 
+            // check if delete task is runnning, if not, restart it
             if let Some(handle) = &del_handle {
                 if handle.is_finished() {
                     // The task has completed, you can start a new one
@@ -146,6 +148,9 @@ impl App {
             }
 
             // -ARC bool is running-
+            // this was the first variant to check if the task is running, but while it was working, it needed a lot of extra imports
+            // using the onboard tokio handle tools (.is_finished()) felt more natural
+
             // let is_running_clone = Arc::clone(&is_running);
 
             // log::debug!("Starting get aggs entries from index task: {}", _index.as_str());

@@ -4,7 +4,7 @@ use color_eyre::eyre::Result;
 use directories::ProjectDirs;
 use lazy_static::lazy_static;
 // use std::fmt;
-use time;
+// use time;
 // use tracing::error;
 use tracing_error::ErrorLayer;
 // use tracing_subscriber::fmt::time::FormatTime;
@@ -12,6 +12,17 @@ use tracing_error::ErrorLayer;
 use tracing_subscriber::{
     self, prelude::__tracing_subscriber_SubscriberExt, util::SubscriberInitExt, Layer,
 };
+
+use chrono::Local;
+use tracing_subscriber::fmt::{time::FormatTime, format::Writer};
+
+struct LocalTime;
+
+impl FormatTime for LocalTime {
+    fn format_time(&self, w: &mut Writer<'_>) -> std::fmt::Result {
+        write!(w, "{}", Local::now().format("%Y-%m-%d %H:%M:%S%.3f"))
+    }
+}
 
 // struct SystemTime;
 
@@ -112,7 +123,10 @@ pub fn get_config_dir() -> PathBuf {
     directory
 }
 
-pub fn initialize_logging(in_directory: &str) -> Result<()> {
+pub fn initialize_logging(in_directory: &str, log_to_console: bool) -> Result<()> {
+
+
+
     let mut directory = PathBuf::from(in_directory);
     if in_directory.is_empty() {
         directory = get_data_dir();
@@ -122,11 +136,11 @@ pub fn initialize_logging(in_directory: &str) -> Result<()> {
     println!("Logging to: {:?}", &log_path);
     let log_file = std::fs::File::create(log_path)?;
 
-    let offset = time::UtcOffset::current_local_offset().unwrap_or(time::UtcOffset::UTC);
-    let timer = tracing_subscriber::fmt::time::OffsetTime::new(
-        offset,
-        time::format_description::well_known::Rfc3339,
-    );
+    // let offset = time::UtcOffset::current_local_offset().unwrap_or(time::UtcOffset::UTC);
+    // let timer = tracing_subscriber::fmt::time::OffsetTime::new(
+    //     offset,
+    //     time::format_description::well_known::Rfc3339,
+    // );
 
     std::env::set_var(
         "RUST_LOG",
@@ -134,18 +148,43 @@ pub fn initialize_logging(in_directory: &str) -> Result<()> {
             .or_else(|_| std::env::var(LOG_ENV.clone()))
             .unwrap_or_else(|_| format!("{}=info", env!("CARGO_CRATE_NAME"))),
     );
+
     let file_subscriber = tracing_subscriber::fmt::layer()
         .with_file(true)
         .with_line_number(true)
         .with_writer(log_file)
         .with_target(false)
         .with_ansi(false)
-        .with_timer(timer)
+        .with_timer(LocalTime)
         .with_filter(tracing_subscriber::filter::EnvFilter::from_default_env());
-    tracing_subscriber::registry()
+
+    //let mut registry = tracing_subscriber::registry();
+    //     .with(file_subscriber)
+    //     .with(ErrorLayer::default());
+
+    if log_to_console {
+        // let timer = tracing_subscriber::fmt::time::OffsetTime::new(
+        //     offset,
+        //     time::format_description::well_known::Rfc3339,
+        // );
+        let console_subscriber = tracing_subscriber::fmt::layer()
+            .with_timer(LocalTime)
+            .with_target(false)
+            .with_ansi(true)
+            .with_filter(tracing_subscriber::filter::EnvFilter::from_default_env());
+
+        let _registry = tracing_subscriber::registry()
         .with(file_subscriber)
-        .with(ErrorLayer::default())
-        .init();
+        .with(console_subscriber)
+        .with(ErrorLayer::default()).init();
+    } else {
+        let _registry = tracing_subscriber::registry()
+            .with(file_subscriber)
+            .with(ErrorLayer::default()).init();
+    };
+    
+    // registry.init();
+
     Ok(())
 }
 
@@ -192,3 +231,4 @@ macro_rules! trace_dbg {
 // Data directory: {data_dir_path}"
 //   )
 // }
+
