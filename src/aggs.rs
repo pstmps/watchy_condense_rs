@@ -26,31 +26,6 @@ pub async fn get_aggs_entries_from_index(
         while hits > 0 {
             hits = 0;
 
-            // let json_query = format!(
-            //     r#"{{
-            //             "size": 0,
-            //             "aggs": {{
-            //                 "unique_event_types": {{
-            //                     "composite": {{
-            //                         "size": {},
-            //                         "sources": [
-            //                             {{
-            //                                 "file": {{
-            //                                     "terms": {{
-            //                                         "field": "file.uri"
-            //                                     }}
-            //                                 }}
-            //                             }}
-            //                         ]
-            //                         {}
-            //                     }}
-            //                 }}
-            //             }}
-            //     }}"#,
-            //         page_size,
-            //         after
-            //     );
-
             let json_query = generate_query(page_size, &after)?;
 
             let value: serde_json::Value = serde_json::from_str(&json_query)?;
@@ -111,23 +86,11 @@ pub async fn get_aggs_entries_from_index(
             after = response_body["aggregations"]["unique_event_types"]["after_key"]["file"]
                 .clone()
                 .to_string();
-
-            // after = format!(
-            //     r#"
-            //         ,
-            //         "after": {{
-            //             "file": {}
-            //         }}
-
-            //         "#,
-            //     serde_json::to_string(&after_key).unwrap()
-            // );
         }
 
         log::info!("Aggs task sleeping for {} seconds", agg_sleep);
         //sleep for $agg_sleep seconds
         sleep(Duration::from_secs(agg_sleep)).await;
-        
     }
 }
 

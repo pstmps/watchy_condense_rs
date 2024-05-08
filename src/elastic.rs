@@ -1,7 +1,7 @@
 use std::io::Read;
 // use color_eyre::config;
-use url::Url;
 use color_eyre::{eyre::Context, Report};
+use url::Url;
 
 use elasticsearch::{http::transport::Transport, http::transport::TransportBuilder, Elasticsearch};
 // use std::error::Error;

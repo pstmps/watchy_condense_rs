@@ -1,16 +1,16 @@
 use serde_json::Value;
 // use std::sync::{Arc, Mutex};
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use tokio::sync::mpsc;
+// use std::sync::Arc;
+// use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::sync::broadcast;
+use tokio::sync::mpsc;
 use tokio::task::JoinHandle;
-use std::time::Duration;
-use std::cell::RefCell;
+// use std::time::Duration;
+// use std::cell::RefCell;
 
-// use futures_util::future::future::FutureExt;
-use futures_util::FutureExt;
-use futures_util::task::noop_waker;
+// // use futures_util::future::future::FutureExt;
+// use futures_util::FutureExt;
+// use futures_util::task::noop_waker;
 
 use crate::aggs::get_aggs_entries_from_index;
 use crate::delete_records::delete_records_from_index;
@@ -57,7 +57,7 @@ impl App {
     pub async fn run(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let (event_tx, mut event_rx) = mpsc::channel(self.action_buffer_size);
         // let (delete_tx, delete_rx) = mpsc::channel(self.action_buffer_size);
-        let (delete_tx, delete_rx) = broadcast::channel(self.action_buffer_size);
+        let (delete_tx, _delete_rx) = broadcast::channel(self.action_buffer_size);
         log::info!(
             "Starting condensing app on index: {} with buffer size: {}",
             self.index,
@@ -71,47 +71,28 @@ impl App {
         let agg_sleep = self.agg_sleep;
 
         let mut handles = Vec::new();
-
-        // let _index = index.to_string();
-        // let _es_host = self.es_host.clone();
-        // let _del_handle = tokio::spawn(async move {
-        //     if let Err(e) = delete_records_from_index(
-        //         _es_host,
-        //         _index.as_str(),
-        //         buffer_size,
-        //         del_timeout,
-        //         delete_rx,
-        //     )
-        //     .await
-        //     {
-        //         log::error!("Failed to start delete records from index task: {}", e)
-        //     }
-        // });
-        // handles.push(_del_handle);
-
         let _index = index.to_string();
 
         // -ARC bool is running-
         // let is_running = Arc::new(AtomicBool::new(false));
-        
+
         let mut agg_handle: Option<tokio::task::JoinHandle<()>> = None;
 
         let mut del_handle: Option<tokio::task::JoinHandle<()>> = None;
 
         loop {
-
             if let Some(handle) = &agg_handle {
                 if handle.is_finished() {
                     // The task has completed, you can start a new one
                     agg_handle = None;
                 }
             }
-        
+
             if agg_handle.is_none() {
                 let _event_tx = event_tx.clone();
                 let _index_clone = index.to_string();
                 let _es_host = self.es_host.clone();
-        
+
                 agg_handle = Some(tokio::spawn(async move {
                     loop {
                         match get_aggs_entries_from_index(
@@ -125,7 +106,10 @@ impl App {
                         {
                             Ok(_) => break, // If the function succeeds, break the loop
                             Err(e) => {
-                                log::error!("Failed to start get aggs entries from index task: {}", e);
+                                log::error!(
+                                    "Failed to start get aggs entries from index task: {}",
+                                    e
+                                );
                                 // Optionally, you can add a delay before retrying
                                 tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
                             }
@@ -142,27 +126,24 @@ impl App {
             }
 
             if del_handle.is_none() {
-                let _delete_rx = delete_tx.subscribe();
+                let mut _delete_rx = delete_tx.subscribe();
                 let _index_clone = index.to_string();
                 let _es_host = self.es_host.clone();
-                    
-                del_handle = Some(tokio::spawn(async move {
-                    
-                    if let Err(e) = delete_records_from_index(
-                            _es_host.clone(),
-                            _index_clone.as_str(),
-                            buffer_size,
-                            del_timeout,
-                            _delete_rx,
-                        )
-                        .await
-                        {
-                            log::error!("Failed to start delete records from index task: {}", e)
-                        }
-                }
-                ));
-            }
 
+                del_handle = Some(tokio::spawn(async move {
+                    if let Err(e) = delete_records_from_index(
+                        _es_host.clone(),
+                        _index_clone.as_str(),
+                        buffer_size,
+                        del_timeout,
+                        _delete_rx,
+                    )
+                    .await
+                    {
+                        log::error!("Failed to start delete records from index task: {}", e)
+                    }
+                }));
+            }
 
             // -ARC bool is running-
             // let is_running_clone = Arc::clone(&is_running);
@@ -173,7 +154,6 @@ impl App {
 
             // let _index_clone = index.to_string();
             // let _es_host = self.es_host.clone();
-
 
             // if !is_running_clone.load(Ordering::SeqCst) {
             //     let _is_running_clone = Arc::clone(&is_running_clone);
@@ -205,8 +185,6 @@ impl App {
 
             // // let _ = _agg_handle.await;
             // -ARC bool is running-
-
-            
 
             if let Some(event) = event_rx.recv().await {
                 let _es_host = self.es_host.clone();

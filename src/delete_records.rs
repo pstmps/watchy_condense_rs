@@ -3,8 +3,8 @@ use elasticsearch::DeleteByQueryParts;
 use serde_json::json;
 use serde_json::Value;
 use std::collections::HashSet;
-use tokio::sync::mpsc;
 use tokio::sync::broadcast;
+// use tokio::sync::mpsc;
 use tokio::time::{sleep, Duration};
 
 use crate::elastic::create_client;
@@ -17,7 +17,6 @@ pub async fn delete_records_from_index(
     timeout: u64,
     mut delete_rx: broadcast::Receiver<Value>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-
     let mut file_paths = HashSet::new();
     let mut records = HashSet::new();
 
@@ -58,8 +57,7 @@ pub async fn delete_records_from_index(
                 }
             }
 
-
-
+            // -- mpsc variant --
             // record = delete_rx.recv() => {
             //     log::debug!("Received record: {:?}", record);
             //     if let Some(record) = record {
@@ -85,6 +83,8 @@ pub async fn delete_records_from_index(
             //         records.insert((record_id, record_index));
             //     }
             // }
+            // -- mpsc variant --
+
             // Timeout after 5 seconds
             _ = sleep(Duration::from_secs(timeout)) => {
                 log::info!("Timeout reached");
@@ -93,37 +93,6 @@ pub async fn delete_records_from_index(
                     log::info!("Deleting records after timeout reached: {:?}", file_paths);
 
                     flush_records(&mut file_paths, &mut records, &es_host, index).await?;
-
-                    // let query = generate_query(&file_paths, &records).unwrap();
-
-                    // // log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
-                    // if log::log_enabled!(log::Level::Debug) {
-                    //     if let Ok(query_string) = serde_json::to_string_pretty(&query) {
-                    //         log::debug!("Query: {}", query_string);
-                    //     } else {
-                    //         log::error!("Failed to serialize query to a pretty string");
-                    //     }
-                    // }
-
-                    // let response = delete_records(es_host.clone(), index, query).await?;
-
-                    // // log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
-                    // if log::log_enabled!(log::Level::Debug) {
-                    //     if let Ok(response_string) = serde_json::to_string_pretty(&response) {
-                    //         log::debug!("Response: {}", response_string);
-                    //     } else {
-                    //         log::error!("Failed to serialize response to a pretty string");
-                    //     }
-                    // }
-
-                    // let query = generate_query(&file_paths, &records).unwrap();
-                    // log_debug_pretty("Query", &query);
-
-                    // let response = delete_records(es_host.clone(), index, query).await?;
-                    // log_debug_pretty("Response", &response);
-
-                    // file_paths.clear();
-                    // records.clear();
                 }
             }
         }
@@ -133,11 +102,6 @@ pub async fn delete_records_from_index(
                 "Deleting records after buffer size reached: {:?}",
                 file_paths
             );
-            // let query = generate_query(&file_paths, &records).unwrap();
-            // log::debug!("Query: {}", serde_json::to_string_pretty(&query).unwrap());
-            // let response = delete_records(es_host.clone(), index, query).await?;
-            // log::debug!("Response: {}", serde_json::to_string_pretty(&response).unwrap());
-
             flush_records(&mut file_paths, &mut records, &es_host, index).await?;
         }
     }
@@ -212,14 +176,12 @@ fn generate_query(
     }
 
     let query = json!({
-    "query": {
-        "bool": {
-            "should": file_paths_query,
-            "must_not": records_query
+        "query": {
+            "bool": {
+                "should": file_paths_query,
+                "must_not": records_query
+            }
         }
-    }
-
-
     });
 
     Ok(query)
