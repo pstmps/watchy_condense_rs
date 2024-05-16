@@ -1,0 +1,13 @@
+[Unit]
+Description=A Condenser for filesystem events
+After=network.target
+
+[Service]
+EnvironmentFile=/opt/watchy_condense/.env
+ExecStart=/opt/watchy_condense/watchy_condense_rs
+Restart=always
+RestartSec=10
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

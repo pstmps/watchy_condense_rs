@@ -24,14 +24,6 @@ impl FormatTime for LocalTime {
     }
 }
 
-// struct SystemTime;
-
-// impl FormatTime for SystemTime {
-//     fn format_time(&self, w: &mut fmt::Formatter<'_>) -> std::io::Result<()> {
-//         write!(w, "{}", chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.3f"))
-//     }
-// }
-
 // const VERSION_MESSAGE: &str =
 //   concat!(env!("CARGO_PKG_VERSION"), "-", env!("VERGEN_GIT_DESCRIBE"), " (", env!("VERGEN_BUILD_DATE"), ")");
 
